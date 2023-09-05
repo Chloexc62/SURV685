@@ -2,7 +2,9 @@
 title: "Project 1"
 author: "Chloe Chen & Kangrui Liu"
 date: "9/5/2023"
-output:  pdf_document
+output:
+  html_document:
+    df_print: paged
 number_sections: yes
 fontsize: 12pt
 ---
@@ -10,41 +12,87 @@ fontsize: 12pt
 
 ## 1) What are the mean and the variance of homeprice? What do they mean?
 ```{r}
-
+library("faraway")
+data("hprice")
+dim(hprice)
+hprice$homeprice<-exp(hprice$narsp)*1000
+mean(hprice$homeprice)
+var(hprice$homeprice)
 ```
+* The mean is $94411.42$ and the variance is $1583110349$.\
+
 
 ## 2) Construct a 95% confidence interval of the average homeprice. What does the confidence interval imply?
 ```{r}
+n<-dim(hprice)[[1]]
+samvar<-var(hprice$homeprice)/(n-1)
+samvar
 
+t.score<-qt(p=.05/2, df=n-1, lower.tail=F)
+t.score
+
+lowCI <- mean(hprice$homeprice)-t.score*sqrt(samvar)
+upCI <- mean(hprice$homeprice)+t.score*sqrt(samvar)
+print(c(lowCI,upCI))
+
+t.test(hprice$homeprice, conf.level = 0.95)
 ```
+* The 95% confidence interval of $\mu_{homeprice}$ is $[90055.97, 98766.87]$\
 
 ## 3) Estimate the average homeprice by whether the MAS was adjacent to a coastline, noted in ajwtr, and the standard errors.
 ```{r}
-
+library(dplyr)
+hprice%>%
+  group_by(ajwtr)%>%
+  summarize(m=mean(hprice$homeprice))
+# standard errors?    In group 1: `ajwtr = 0`Caused by error in `std.error()`: could not find function "std.error"
 ```
+
 
 ## 4) Test the difference in homeprice between coastline MSAs and non-coastline MSAs. Clearly state the formula for the hypothesis, the test method and your rationale for selecting the method. What do you conclude about the hypothesis?
+Step1: Test equal variance
+Corresponding hypothesis: $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ vs. $H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}$
 ```{r}
-
+var.test(homeprice ~ ajwtr, hprice, alternative = "two.sided")
 ```
+
+* We conclude that $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ does not hold \
+Step 2: So we choose t-test
+
+```{r}
+t.test(homeprice ~ ajwtr, hprice, var.equal=FALSE, conf.int = 0.95)
+```
+* We reject $H_0: \mu_{=1}=\mu_{=0}$, meaning that the homeprice is not the same for those living on different coastlies.
+
 
 ## 5) Estimate the Pearson correlation coefficient between homeprice and per capita income of the MSA of a given year, noted in ypc.
 ```{r}
-
+cor(hprice$homeprice, hprice$ypc)
 ```
+\hfill
 
 ## 6) Test whether the correlation coefficient between homeprice and ypc is 0 or not. Clearly state the hypothesis including the formula. What do you conclude?
+Hypothesis: $H_0:\cor(homeprice, ypc)=0$ vs. $H_A:\cor(homeprice, ypc)\neq\0$
 ```{r}
-
+cor.test(hprice$homeprice, hprice$ypc)
 ```
+* We reject $\cor(homeprice, ypc)=0$
+
 
 ## 7) Can you say that per capita income has an effect on the home sales price using the results from #6)? Why or why not?
 ```{r}
-
+#Correlation does not imply causation
 ```
 
 ## 8) Test the normality of homeprice. Would this test result change your responses to #1) to 7)? Why or why not?
 ```{r}
-
+library(ggplot2)
+ggplot(hprice, aes(x=homeprice)) + geom_histogram(binwidth=2200)
+qqnorm(hprice$homeprice, main="hprice", ylab="y_{i:n}", xlab="m_{i:n}") 
+qqline(hprice$homeprice, col="red",lwd=2)
 ```
 
+
+
+
+* From the historgram, the qq-plot as well as the formal test, \texttt{homeprice} does not appear to follow a normal distribution.But this wouldn't change the responses to the previous questions, because this still make sense with a sufficiently large sample(N=324), according to CLT.\
