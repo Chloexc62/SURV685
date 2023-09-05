@@ -1,0 +1,50 @@
+---
+title: "Project 1"
+author: "Chloe Chen & Kangrui Liu"
+date: "9/5/2023"
+output:  pdf_document
+number_sections: yes
+fontsize: 12pt
+---
+# 1. Use \texttt{hprice} in \texttt{faraway} package.
+
+## 1) What are the mean and the variance of homeprice? What do they mean?
+```{r}
+
+```
+
+## 2) Construct a 95% confidence interval of the average homeprice. What does the confidence interval imply?
+```{r}
+
+```
+
+## 3) Estimate the average homeprice by whether the MAS was adjacent to a coastline, noted in ajwtr, and the standard errors.
+```{r}
+
+```
+
+## 4) Test the difference in homeprice between coastline MSAs and non-coastline MSAs. Clearly state the formula for the hypothesis, the test method and your rationale for selecting the method. What do you conclude about the hypothesis?
+```{r}
+
+```
+
+## 5) Estimate the Pearson correlation coefficient between homeprice and per capita income of the MSA of a given year, noted in ypc.
+```{r}
+
+```
+
+## 6) Test whether the correlation coefficient between homeprice and ypc is 0 or not. Clearly state the hypothesis including the formula. What do you conclude?
+```{r}
+
+```
+
+## 7) Can you say that per capita income has an effect on the home sales price using the results from #6)? Why or why not?
+```{r}
+
+```
+
+## 8) Test the normality of homeprice. Would this test result change your responses to #1) to 7)? Why or why not?
+```{r}
+
+```
+
