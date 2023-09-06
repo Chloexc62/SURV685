@@ -76,7 +76,7 @@ Hypothesis: $H_0:\cor(homeprice, ypc)=0$ vs. $H_A:\cor(homeprice, ypc)\neq\0$
 ```{r}
 cor.test(hprice$homeprice, hprice$ypc)
 ```
-* We reject $\cor(homeprice, ypc)=0$
+* We reject $cor(homeprice, ypc)=0$
 
 
 ## 7) Can you say that per capita income has an effect on the home sales price using the results from #6)? Why or why not?
