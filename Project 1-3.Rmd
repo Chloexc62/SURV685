@@ -3,6 +3,7 @@ title: "Project 1"
 author: "Chloe Chen & Kangrui Liu"
 date: "9/5/2023"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 number_sections: yes

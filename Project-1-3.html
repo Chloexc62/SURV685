@@ -1629,29 +1629,37 @@ display: none;
 
 <div id="use-in-package." class="section level1">
 <h1>1. Use in package.</h1>
-<div id="what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean" class="section level2">
-<h2>1) What are the mean and the variance of homeprice? What do they
-mean?</h2>
-<pre class="r"><code>library(&quot;faraway&quot;)
+<pre class="r"><code>#prepare data set
+library(&quot;faraway&quot;)
 data(&quot;hprice&quot;)
 dim(hprice)</code></pre>
 <pre><code>## [1] 324   8</code></pre>
-<pre class="r"><code>hprice$homeprice&lt;-exp(hprice$narsp)*1000
-mean(hprice$homeprice)</code></pre>
+<pre class="r"><code>hprice$homeprice&lt;-exp(hprice$narsp)*1000</code></pre>
+<div id="what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean" class="section level2">
+<h2>1) What are the mean and the variance of homeprice? What do they
+mean?</h2>
+<pre class="r"><code>mean(hprice$homeprice)</code></pre>
 <pre><code>## [1] 94411.42</code></pre>
 <pre class="r"><code>var(hprice$homeprice)</code></pre>
 <pre><code>## [1] 1583110349</code></pre>
 <ul>
+<li><ol style="list-style-type: lower-alpha">
 <li>The mean is <span class="math inline">\(94411.42\)</span> and the
 variance is <span class="math inline">\(1583110349\)</span>.<br />
 </li>
+</ol></li>
+<li><ol start="2" style="list-style-type: lower-alpha">
+<li>The terms “mean” and “variance” refer to the average of a data set
+and the deviation of a data point from the mean, respectively.<br />
+</li>
+</ol></li>
 </ul>
 </div>
 <div id="construct-a-95-confidence-interval-of-the-average-homeprice.-what-does-the-confidence-interval-imply" class="section level2">
 <h2>2) Construct a 95% confidence interval of the average homeprice.
 What does the confidence interval imply?</h2>
-<pre class="r"><code>n&lt;-dim(hprice)[[1]]
-samvar&lt;-var(hprice$homeprice)/(n-1)
+<pre class="r"><code>n&lt;-dim(hprice)[[1]] # find the number of homeprice
+samvar&lt;-var(hprice$homeprice)/(n-1)  # sampling var 
 samvar</code></pre>
 <pre><code>## [1] 4901270</code></pre>
 <pre class="r"><code>t.score&lt;-qt(p=.05/2, df=n-1, lower.tail=F)
@@ -1681,6 +1689,22 @@ print(c(lowCI,upCI))</code></pre>
 <div id="estimate-the-average-homeprice-by-whether-the-mas-was-adjacent-to-a-coastline-noted-in-ajwtr-and-the-standard-errors." class="section level2">
 <h2>3) Estimate the average homeprice by whether the MAS was adjacent to
 a coastline, noted in ajwtr, and the standard errors.</h2>
+<pre class="r"><code>subset1 &lt;- subset(hprice, hprice$ajwtr == 1)# yes
+subset2 &lt;- subset(hprice, hprice$ajwtr == 0)# no
+mean1 &lt;- mean(subset1$homeprice)
+mean2 &lt;- mean(subset2$homeprice)
+se1 &lt;- sd(subset1$homeprice)/sqrt(nrow(subset1))
+se2 &lt;- sd(subset2$homeprice)/sqrt(nrow(subset2))</code></pre>
+</div>
+<div id="test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis" class="section level2">
+<h2>4) Test the difference in homeprice between coastline MSAs and
+non-coastline MSAs. Clearly state the formula for the hypothesis, the
+test method and your rationale for selecting the method. What do you
+conclude about the hypothesis?</h2>
+<ul>
+<li>Step1: Check means and variances<br />
+</li>
+</ul>
 <pre class="r"><code>library(dplyr)</code></pre>
 <pre><code>## 
 ## 载入程辑包：&#39;dplyr&#39;</code></pre>
@@ -1692,21 +1716,22 @@ a coastline, noted in ajwtr, and the standard errors.</h2>
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>hprice%&gt;%
   group_by(ajwtr)%&gt;%
-  summarize(m=mean(hprice$homeprice))</code></pre>
+  summarize(m=mean(homeprice),
+            v=var(homeprice))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["ajwtr"],"name":[1],"type":["fct"],"align":["left"]},{"label":["m"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"94411.42"},{"1":"1","2":"94411.42"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["ajwtr"],"name":[1],"type":["fct"],"align":["left"]},{"label":["m"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["v"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"82388.89","3":"285315565"},{"1":"1","2":"111242.96","3":"2926428411"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<pre class="r"><code># standard errors?    In group 1: `ajwtr = 0`Caused by error in `std.error()`: could not find function &quot;std.error&quot;</code></pre>
-</div>
-<div id="test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis" class="section level2">
-<h2>4) Test the difference in homeprice between coastline MSAs and
-non-coastline MSAs. Clearly state the formula for the hypothesis, the
-test method and your rationale for selecting the method. What do you
-conclude about the hypothesis?</h2>
-<p>Step1: Test equal variance Corresponding hypothesis: <span class="math inline">\(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\)</span>
-vs. <span class="math inline">\(H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}\)</span></p>
+<ul>
+<li><p><span class="math inline">\(\mu_{ajwtr=0}=\hat{\bar{y}}_{ajwtr=0}=82388.89\)</span>
+and <span class="math inline">\(\sigma^2_{ajwtr=0}=s^2_{ajwtr=0}=285315565\)</span></p></li>
+<li><p><span class="math inline">\(\mu_{ajwtr=1}=\hat{\bar{y}}_{ajwtr=1}=111242.96\)</span>
+and <span class="math inline">\(\sigma^2_{ajwtr=1}=s^2_{ajwtr=1}=2926428411\)</span></p></li>
+<li><p>Step2: Test equal variance ( with F test)<br />
+Corresponding hypothesis: <span class="math inline">\(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\)</span>
+vs. <span class="math inline">\(H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}.\)</span></p></li>
+</ul>
 <pre class="r"><code>var.test(homeprice ~ ajwtr, hprice, alternative = &quot;two.sided&quot;)</code></pre>
 <pre><code>## 
 ##  F test to compare two variances
@@ -1720,9 +1745,12 @@ vs. <span class="math inline">\(H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}\)<
 ## ratio of variances 
 ##         0.09749617</code></pre>
 <ul>
-<li>We conclude that <span class="math inline">\(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\)</span>
-does not hold<br />
-Step 2: So we choose t-test</li>
+<li><p>The range of 95 percent confidence interval is <span class="math inline">\([0.07088604,0.13297389]\)</span>, and the ratio of
+variances is <span class="math inline">\(0.09749617\)</span>. Therefore,
+We conclude that <span class="math inline">\(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\)</span>
+does not hold.</p></li>
+<li><p>Step 3: Conduct proper testing(t-test)<br />
+</p></li>
 </ul>
 <pre class="r"><code>t.test(homeprice ~ ajwtr, hprice, var.equal=FALSE, conf.int = 0.95)</code></pre>
 <pre><code>## 
@@ -1739,23 +1767,24 @@ Step 2: So we choose t-test</li>
 <ul>
 <li>We reject <span class="math inline">\(H_0:
 \mu_{=1}=\mu_{=0}\)</span>, meaning that the homeprice is not the same
-for those living on different coastlies.</li>
+for those living on different coastlines.</li>
 </ul>
 </div>
 <div id="estimate-the-pearson-correlation-coefficient-between-homeprice-and-per-capita-income-of-the-msa-of-a-given-year-noted-in-ypc." class="section level2">
 <h2>5) Estimate the Pearson correlation coefficient between homeprice
 and per capita income of the MSA of a given year, noted in ypc.</h2>
-<pre class="r"><code>cor(hprice$homeprice, hprice$ypc)</code></pre>
+<pre class="r"><code>cor(hprice$homeprice, hprice$ypc, method=&quot;pearson&quot;)</code></pre>
 <pre><code>## [1] 0.7437474</code></pre>
+<ul>
+<li>The Pearson correlation coefficient between homeprice and ypc is
+<span class="math inline">\(0.7437474\)</span>.</li>
+</ul>
 </div>
 <div id="test-whether-the-correlation-coefficient-between-homeprice-and-ypc-is-0-or-not.-clearly-state-the-hypothesis-including-the-formula.-what-do-you-conclude" class="section level2">
 <h2>6) Test whether the correlation coefficient between homeprice and
 ypc is 0 or not. Clearly state the hypothesis including the formula.
 What do you conclude?</h2>
-<p>Hypothesis: <span class="math inline">\(H_0:\cor(homeprice,
-ypc)=0\)</span> vs. <span class="math inline">\(H_A:\cor(homeprice,
-ypc)\neq\0\)</span></p>
-<pre class="r"><code>cor.test(hprice$homeprice, hprice$ypc)</code></pre>
+<pre class="r"><code>cor.test(hprice$homeprice, hprice$ypc, method=&quot;pearson&quot;)</code></pre>
 <pre><code>## 
 ##  Pearson&#39;s product-moment correlation
 ## 
@@ -1768,13 +1797,24 @@ ypc)\neq\0\)</span></p>
 ##       cor 
 ## 0.7437474</code></pre>
 <ul>
-<li>We reject <span class="math inline">\(\cor(homeprice,
-ypc)=0\)</span></li>
+<li>Corresponding hypothesis: <span class="math inline">\(H_0:\rho=0\)</span> vs. <span class="math inline">\(H_A:\rho\neq0\)</span>.</li>
+<li><span class="math inline">\(\bar\rho=0.7437474\)</span>, and 95% CI
+is <span class="math inline">\([0.6907661,0.7887854]\)</span>, So reject
+<span class="math inline">\(H_0\)</span>.</li>
 </ul>
 </div>
 <div id="can-you-say-that-per-capita-income-has-an-effect-on-the-home-sales-price-using-the-results-from-6-why-or-why-not" class="section level2">
 <h2>7) Can you say that per capita income has an effect on the home
 sales price using the results from #6)? Why or why not?</h2>
+<ul>
+<li>The fact that two variables A and B have a significant correlation
+coefficient does not imply that A has a causal effect on B. Correlation
+measures the strength and direction of a linear relationship between two
+variables, but it does not establish causation. Causation would require
+further research or causal inference methods to determine whether one
+variable directly influences the other. Therefore, significant
+correlation alone does not imply a causal relationship.</li>
+</ul>
 </div>
 <div id="test-the-normality-of-homeprice.-would-this-test-result-change-your-responses-to-1-to-7-why-or-why-not" class="section level2">
 <h2>8) Test the normality of homeprice. Would this test result change
@@ -1785,11 +1825,18 @@ ggplot(hprice, aes(x=homeprice)) + geom_histogram(binwidth=2200)</code></pre>
 <pre class="r"><code>qqnorm(hprice$homeprice, main=&quot;hprice&quot;, ylab=&quot;y_{i:n}&quot;, xlab=&quot;m_{i:n}&quot;) 
 qqline(hprice$homeprice, col=&quot;red&quot;,lwd=2)</code></pre>
 <p><img src="data:image/png;base64,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" width="672" /></p>
+<pre class="r"><code>shapiro.test(hprice$homeprice)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  hprice$homeprice
+## W = 0.7327, p-value &lt; 2.2e-16</code></pre>
 <ul>
-<li>From the historgram, the qq-plot as well as the formal test, does
-not appear to follow a normal distribution.But this wouldn’t change the
-responses to the previous questions, because this still make sense with
-a sufficiently large sample(N=324), according to CLT.<br />
+<li>In Shapiro-Wilk normality test, p-value &lt; 0.05, and from the
+histogram, as well as the qq-plot, does not appear to follow a normal
+distribution.But this wouldn’t change the responses to the previous
+questions, because this still make sense with a sufficiently large
+sample(N=324), according to CLT.<br />
 </li>
 </ul>
 </div>
