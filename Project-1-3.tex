@@ -115,13 +115,9 @@
 \section{\texorpdfstring{1. Use \texttt{hprice} in \texttt{faraway}
 package.}{1. Use  in  package.}}\label{use-in-package.}}
 
-\hypertarget{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}{%
-\subsection{1) What are the mean and the variance of homeprice? What do
-they
-mean?}\label{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}}
-
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#prepare data set}
 \FunctionTok{library}\NormalTok{(}\StringTok{"faraway"}\NormalTok{)}
 \FunctionTok{data}\NormalTok{(}\StringTok{"hprice"}\NormalTok{)}
 \FunctionTok{dim}\NormalTok{(hprice)}
@@ -135,6 +131,16 @@ mean?}\label{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}}
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{hprice}\SpecialCharTok{$}\NormalTok{homeprice}\OtherTok{\textless{}{-}}\FunctionTok{exp}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{narsp)}\SpecialCharTok{*}\DecValTok{1000}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}{%
+\subsection{1) What are the mean and the variance of homeprice? What do
+they
+mean?}\label{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \FunctionTok{mean}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice)}
 \end{Highlighting}
 \end{Shaded}
@@ -154,9 +160,22 @@ mean?}\label{what-are-the-mean-and-the-variance-of-homeprice-what-do-they-mean}}
 \end{verbatim}
 
 \begin{itemize}
-\tightlist
 \item
-  The mean is \(94411.42\) and the variance is \(1583110349\).\\
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \tightlist
+  \item
+    The mean is \(94411.42\) and the variance is \(1583110349\).\\
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumi{\alph{enumi})}
+  \setcounter{enumi}{1}
+  \tightlist
+  \item
+    The terms ``mean'' and ``variance'' refer to the average of a data
+    set and the deviation of a data point from the mean, respectively.\\
+  \end{enumerate}
 \end{itemize}
 
 \hypertarget{construct-a-95-confidence-interval-of-the-average-homeprice.-what-does-the-confidence-interval-imply}{%
@@ -166,8 +185,8 @@ imply?}\label{construct-a-95-confidence-interval-of-the-average-homeprice.-what-
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{n}\OtherTok{\textless{}{-}}\FunctionTok{dim}\NormalTok{(hprice)[[}\DecValTok{1}\NormalTok{]]}
-\NormalTok{samvar}\OtherTok{\textless{}{-}}\FunctionTok{var}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice)}\SpecialCharTok{/}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{)}
+\NormalTok{n}\OtherTok{\textless{}{-}}\FunctionTok{dim}\NormalTok{(hprice)[[}\DecValTok{1}\NormalTok{]] }\CommentTok{\# find the number of homeprice}
+\NormalTok{samvar}\OtherTok{\textless{}{-}}\FunctionTok{var}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice)}\SpecialCharTok{/}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{)  }\CommentTok{\# sampling var }
 \NormalTok{samvar}
 \end{Highlighting}
 \end{Shaded}
@@ -219,10 +238,41 @@ imply?}\label{construct-a-95-confidence-interval-of-the-average-homeprice.-what-
 ##  94411.42
 \end{verbatim}
 
+\begin{itemize}
+\tightlist
+\item
+  The 95\% confidence interval of \(\mu_{homeprice}\) is
+  \([90055.97, 98766.87]\)\\
+\end{itemize}
+
 \hypertarget{estimate-the-average-homeprice-by-whether-the-mas-was-adjacent-to-a-coastline-noted-in-ajwtr-and-the-standard-errors.}{%
 \subsection{3) Estimate the average homeprice by whether the MAS was
 adjacent to a coastline, noted in ajwtr, and the standard
 errors.}\label{estimate-the-average-homeprice-by-whether-the-mas-was-adjacent-to-a-coastline-noted-in-ajwtr-and-the-standard-errors.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{subset1 }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(hprice, hprice}\SpecialCharTok{$}\NormalTok{ajwtr }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}\CommentTok{\# yes}
+\NormalTok{subset2 }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(hprice, hprice}\SpecialCharTok{$}\NormalTok{ajwtr }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)}\CommentTok{\# no}
+\NormalTok{mean1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(subset1}\SpecialCharTok{$}\NormalTok{homeprice)}
+\NormalTok{mean2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(subset2}\SpecialCharTok{$}\NormalTok{homeprice)}
+\NormalTok{se1 }\OtherTok{\textless{}{-}} \FunctionTok{sd}\NormalTok{(subset1}\SpecialCharTok{$}\NormalTok{homeprice)}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(subset1))}
+\NormalTok{se2 }\OtherTok{\textless{}{-}} \FunctionTok{sd}\NormalTok{(subset2}\SpecialCharTok{$}\NormalTok{homeprice)}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(subset2))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis}{%
+\subsection{4) Test the difference in homeprice between coastline MSAs
+and non-coastline MSAs. Clearly state the formula for the hypothesis,
+the test method and your rationale for selecting the method. What do you
+conclude about the
+hypothesis?}\label{test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis}}
+
+\begin{itemize}
+\tightlist
+\item
+  Step1: Check means and variances\\
+\end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -251,34 +301,35 @@ errors.}\label{estimate-the-average-homeprice-by-whether-the-mas-was-adjacent-to
 \begin{Highlighting}[]
 \NormalTok{hprice}\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{group\_by}\NormalTok{(ajwtr)}\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{m=}\FunctionTok{mean}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice))}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{m=}\FunctionTok{mean}\NormalTok{(homeprice),}
+            \AttributeTok{v=}\FunctionTok{var}\NormalTok{(homeprice))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 2 x 2
-##   ajwtr      m
-##   <fct>  <dbl>
-## 1 0     94411.
-## 2 1     94411.
+## # A tibble: 2 x 3
+##   ajwtr       m           v
+##   <fct>   <dbl>       <dbl>
+## 1 0      82389.  285315565.
+## 2 1     111243. 2926428411.
 \end{verbatim}
 
+\begin{itemize}
+\item
+  \(\mu_{ajwtr=0}=\hat{\bar{y}}_{ajwtr=0}=82388.89\) and
+  \(\sigma^2_{ajwtr=0}=s^2_{ajwtr=0}=285315565\)
+\item
+  \(\mu_{ajwtr=1}=\hat{\bar{y}}_{ajwtr=1}=111242.96\) and
+  \(\sigma^2_{ajwtr=1}=s^2_{ajwtr=1}=2926428411\)
+\item
+  Step2: Test equal variance ( with F test)\\
+  Corresponding hypothesis:
+  \(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\)
+  vs.~\(H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}.\)
+\end{itemize}
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# standard errors?    In group 1: \textasciigrave{}ajwtr = 0\textasciigrave{}Caused by error in \textasciigrave{}std.error()\textasciigrave{}: could not find function "std.error"}
-\end{Highlighting}
-\end{Shaded}
-
-\hypertarget{test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis}{%
-\subsection{4) Test the difference in homeprice between coastline MSAs
-and non-coastline MSAs. Clearly state the formula for the hypothesis,
-the test method and your rationale for selecting the method. What do you
-conclude about the
-hypothesis?}\label{test-the-difference-in-homeprice-between-coastline-msas-and-non-coastline-msas.-clearly-state-the-formula-for-the-hypothesis-the-test-method-and-your-rationale-for-selecting-the-method.-what-do-you-conclude-about-the-hypothesis}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#Test equal variance}
 \FunctionTok{var.test}\NormalTok{(homeprice }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ajwtr, hprice, }\AttributeTok{alternative =} \StringTok{"two.sided"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -298,15 +349,17 @@ hypothesis?}\label{test-the-difference-in-homeprice-between-coastline-msas-and-n
 \end{verbatim}
 
 \begin{itemize}
-\tightlist
 \item
-  We conclude that \(H_0:\sigma^2_{ajwtr=1}=\sigma^2_{ajwtr=0}\) does
-  not hold\\
+  The range of 95 percent confidence interval is
+  \([0.07088604,0.13297389]\), and the ratio of variances is
+  \(0.09749617\). Therefore, We conclude that
+  \(H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}\) does not hold.
+\item
+  Step 3: Conduct proper testing(t-test)\\
 \end{itemize}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#So we choose t{-}test}
 \FunctionTok{t.test}\NormalTok{(homeprice }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ajwtr, hprice, }\AttributeTok{var.equal=}\ConstantTok{FALSE}\NormalTok{, }\AttributeTok{conf.int =} \FloatTok{0.95}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -325,13 +378,34 @@ hypothesis?}\label{test-the-difference-in-homeprice-between-coastline-msas-and-n
 ##        82388.89       111242.96
 \end{verbatim}
 
-** We reject \(H_0: \mu_{=1}=\mu_{=0}\), meaning that the homeprice is
-not the same for those living on different coastlies.
+\begin{itemize}
+\tightlist
+\item
+  We reject \(H_0: \mu_{=1}=\mu_{=0}\), meaning that the homeprice is
+  not the same for those living on different coastlines.
+\end{itemize}
 
 \hypertarget{estimate-the-pearson-correlation-coefficient-between-homeprice-and-per-capita-income-of-the-msa-of-a-given-year-noted-in-ypc.}{%
 \subsection{5) Estimate the Pearson correlation coefficient between
 homeprice and per capita income of the MSA of a given year, noted in
 ypc.}\label{estimate-the-pearson-correlation-coefficient-between-homeprice-and-per-capita-income-of-the-msa-of-a-given-year-noted-in-ypc.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice, hprice}\SpecialCharTok{$}\NormalTok{ypc, }\AttributeTok{method=}\StringTok{"pearson"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.7437474
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  The Pearson correlation coefficient between homeprice and ypc is
+  \(0.7437474\).
+\end{itemize}
 
 \hypertarget{test-whether-the-correlation-coefficient-between-homeprice-and-ypc-is-0-or-not.-clearly-state-the-hypothesis-including-the-formula.-what-do-you-conclude}{%
 \subsection{6) Test whether the correlation coefficient between
@@ -339,14 +413,98 @@ homeprice and ypc is 0 or not. Clearly state the hypothesis including
 the formula. What do you
 conclude?}\label{test-whether-the-correlation-coefficient-between-homeprice-and-ypc-is-0-or-not.-clearly-state-the-hypothesis-including-the-formula.-what-do-you-conclude}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice, hprice}\SpecialCharTok{$}\NormalTok{ypc, }\AttributeTok{method=}\StringTok{"pearson"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  hprice$homeprice and hprice$ypc
+## t = 19.965, df = 322, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.6907661 0.7887854
+## sample estimates:
+##       cor 
+## 0.7437474
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Corresponding hypothesis: \(H_0:\rho=0\) vs.~\(H_A:\rho\neq0\).
+\item
+  \(\bar\rho=0.7437474\), and 95\% CI is \([0.6907661,0.7887854]\), So
+  reject \(H_0\).
+\end{itemize}
+
 \hypertarget{can-you-say-that-per-capita-income-has-an-effect-on-the-home-sales-price-using-the-results-from-6-why-or-why-not}{%
 \subsection{7) Can you say that per capita income has an effect on the
 home sales price using the results from \#6)? Why or why
 not?}\label{can-you-say-that-per-capita-income-has-an-effect-on-the-home-sales-price-using-the-results-from-6-why-or-why-not}}
 
+\begin{itemize}
+\tightlist
+\item
+  The fact that two variables A and B have a significant correlation
+  coefficient does not imply that A has a causal effect on B.
+  Correlation measures the strength and direction of a linear
+  relationship between two variables, but it does not establish
+  causation. Causation would require further research or causal
+  inference methods to determine whether one variable directly
+  influences the other. Therefore, significant correlation alone does
+  not imply a causal relationship.
+\end{itemize}
+
 \hypertarget{test-the-normality-of-homeprice.-would-this-test-result-change-your-responses-to-1-to-7-why-or-why-not}{%
 \subsection{8) Test the normality of homeprice. Would this test result
 change your responses to \#1) to 7)? Why or why
 not?}\label{test-the-normality-of-homeprice.-would-this-test-result-change-your-responses-to-1-to-7-why-or-why-not}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{ggplot}\NormalTok{(hprice, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{homeprice)) }\SpecialCharTok{+} \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{binwidth=}\DecValTok{2200}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project-1-3_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{qqnorm}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice, }\AttributeTok{main=}\StringTok{"hprice"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"y\_\{i:n\}"}\NormalTok{, }\AttributeTok{xlab=}\StringTok{"m\_\{i:n\}"}\NormalTok{) }
+\FunctionTok{qqline}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice, }\AttributeTok{col=}\StringTok{"red"}\NormalTok{,}\AttributeTok{lwd=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Project-1-3_files/figure-latex/unnamed-chunk-10-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{shapiro.test}\NormalTok{(hprice}\SpecialCharTok{$}\NormalTok{homeprice)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  hprice$homeprice
+## W = 0.7327, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  In Shapiro-Wilk normality test, p-value \textless{} 0.05, and from the
+  histogram, as well as the qq-plot, \texttt{homeprice} does not appear
+  to follow a normal distribution.But this wouldn't change the responses
+  to the previous questions, because this still make sense with a
+  sufficiently large sample(N=324), according to CLT.\\
+\end{itemize}
 
 \end{document}
