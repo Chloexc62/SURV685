@@ -77,7 +77,9 @@ var.test(homeprice ~ ajwtr, hprice, alternative = "two.sided")
 * The range of 95 percent confidence interval is $[0.07088604,0.13297389]$, and the ratio of variances is $0.09749617$. Therefore, We conclude that $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ does not hold.
 
 * Step 3: Conduct proper testing(t-test) \
+According to the above steps, we conclude that the two subgroups vary in their variance,so we choose t-tast to test the difference in homeprice between coastline MSAs and non-coastline MSAs.
 
+* $H_0: \mu_{=1}=\mu_{=0}$ vs.$H_A:\mu_{=1}\neq\mu_{=0}
 ```{r}
 t.test(homeprice ~ ajwtr, hprice, var.equal=FALSE, conf.int = 0.95)
 ```
@@ -116,4 +118,4 @@ shapiro.test(hprice$homeprice)
 
 
 
-* In Shapiro-Wilk normality test, p-value < 0.05, and from the histogram, as well as the qq-plot, \texttt{homeprice} does not appear to follow a normal distribution.But this wouldn't change the responses to the previous questions, because this still make sense with a sufficiently large sample(N=324), according to CLT.\
+* In Shapiro-Wilk normality test, p-value < 0.05, and from the histogram, as well as the qq-plot, \texttt{homeprice} does not appear to follow a normal distribution.But this wouldn't change the responses to the previous questions, because this still make sense with a sufficiently large sample(N=324, N>30), according to CLT.\
