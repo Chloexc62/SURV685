@@ -1,7 +1,7 @@
 ---
 title: "Project 1"
 author: "Chloe Chen & Kangrui Liu"
-date: "9/8/2023"
+date: "9/10/2023"
 output:
   pdf_document: default
   html_document:
@@ -58,7 +58,7 @@ se2 <- sd(subset2$homeprice)/sqrt(nrow(subset2))
 * We estimate the average homeprice by the MSA was not adjacent to a coastline is $82388.89$ and the standard error of it is $1228.66$.
 
 ## 4) Test the difference in homeprice between coastline MSAs and non-coastline MSAs. Clearly state the formula for the hypothesis, the test method and your rationale for selecting the method. What do you conclude about the hypothesis?
-* Step1: Check means and variances \
+* Step1: Check means and variances
 ```{r}
 library(dplyr)
 hprice%>%
@@ -69,20 +69,22 @@ hprice%>%
 * $\hat\mu_{ajwtr=0}=\hat{\bar{y}}_{ajwtr=0}=82388.89$ and $\sigma^2_{ajwtr=0}=s^2_{ajwtr=0}=285315565$
 * $\hat\mu_{ajwtr=1}=\hat{\bar{y}}_{ajwtr=1}=111242.96$ and $\sigma^2_{ajwtr=1}=s^2_{ajwtr=1}=2926428411$
 
-* Step2: Test equal variance ( with F test)\
-Corresponding hypothesis: $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ vs. $H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}.$
+* Step2: Test equal variance \
+We firstly compare the equality of variances between two groups by using F-test.
+* Corresponding hypothesis: $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ vs. $H_A:\sigma^2_{ajwtr=0}\neq\sigma^2_{ajwtr=1}.$ 
 ```{r}
 var.test(homeprice ~ ajwtr, hprice, alternative = "two.sided")
 ```
 
 * The range of 95 percent confidence interval is $[0.07088604,0.13297389]$, and the ratio of variances is $0.09749617$. Therefore, We conclude that $H_0:\sigma^2_{ajwtr=0}=\sigma^2_{ajwtr=1}$ does not hold.
 
-* Step 3: Conduct proper testing(t-test) \
-
+* Step 3: Conduct proper testing \
+According to the above steps, we conclude that the two subgroups vary in their variance, so we choose t-test to test the difference in homeprice between coastline MSAs and non-coastline MSAs.\
+* Corresponding hypothesis: $H_0: \mu_{ajwtr=1}=\mu_{ajwtr=0}$ vs.$H_A:\mu_{ajwtr=1}\neq\mu_{ajwtr=0}$ \
 ```{r}
 t.test(homeprice ~ ajwtr, hprice, var.equal=FALSE, conf.int = 0.95)
 ```
-* We reject $H_0: \mu_{=1}=\mu_{=0}$, meaning that the homeprice is not the same for those living on different coastlines.
+* We reject $H_0: \mu_{ajwtr=1}=\mu_{ajwtr=0}$, meaning that the homeprice is not the same for those living on different coastlines.\
 
 
 ## 5) Estimate the Pearson correlation coefficient between homeprice and per capita income of the MSA of a given year, noted in ypc.
@@ -113,6 +115,4 @@ qqnorm(hprice$homeprice, main="hprice", ylab="y_{i:n}", xlab="m_{i:n}")
 qqline(hprice$homeprice, col="red",lwd=2)
 shapiro.test(hprice$homeprice)
 ```
-
-
-* In Shapiro-Wilk normality test, p-value < 0.05, and from the histogram, as well as the qq-plot, \texttt{homeprice} does not appear to follow a normal distribution.But this wouldn't change the responses to the previous questions, because this still make sense with a sufficiently large sample(N=324), according to CLT.\
+* In Shapiro-Wilk normality test, p-value < 0.05, and from the histogram, as well as the qq-plot, \texttt{homeprice} does not appear to follow a normal distribution.But this wouldn't change the responses to the previous questions, because this still make sense with a sufficiently large sample(N=324, N>30), according to CLT.
