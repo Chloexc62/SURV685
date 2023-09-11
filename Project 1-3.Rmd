@@ -42,7 +42,7 @@ print(c(lowCI,upCI))
 
 t.test(hprice$homeprice, conf.level = 0.95)
 ```
-* The 95% confidence interval of $\mu_{homeprice}$ is $[90055.97, 98766.87]$\
+* The 95% confidence interval of $\mu_{homeprice}$ is $[90055.97, 98766.87]$. And A 95% confidence interval for the average home price, denoted as $[90055.97, 98766.87]$, indicates that, considering the sample data and the applied statistical methodology, there is a 95% level of confidence that the true population mean of home prices falls within this range.\
 
 ## 3) Estimate the average homeprice by whether the MSA was adjacent to a coastline, noted in ajwtr, and the standard errors.
 
