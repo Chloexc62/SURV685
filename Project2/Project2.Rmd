@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE,cache=TRUE,
 ### Advantages:
 1) High Predictive Capacity: Can capture complex patterns and non-linear relationships in data.
 2) Effective for Complex Data: Suitable for complex datasets with intricate relationships.
-30 Overfitting Control: Overfitting can be mitigated with proper regularization techniques.
+3) Overfitting Control: Overfitting can be mitigated with proper regularization techniques.
 
 ### Disadvantages:
 1) Overfitting Risk: Prone to overfitting, fitting noise in the data.
