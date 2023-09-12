@@ -1,0 +1,134 @@
+---
+title: "SMML Class 3 Lab"
+author: "John Kubale"
+date: "9/12/2022"
+output: pdf_document
+number_sections: yes
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE, tidy=TRUE}
+knitr::opts_chunk$set(echo = TRUE,cache=TRUE, 
+                      autodep=TRUE, cache.comments=FALSE,
+                      message=FALSE, warning=FALSE)
+```
+
+## Read in Income2.csv (available on Canvas as well as JWHT Website)
+
+```{r}
+inc<-read.csv("C:/Users/jkubale/Dropbox (University of Michigan)/MPSDS 685/data/Income2.csv") #remember to change your filepath!
+dim(inc)
+names(inc)
+summary(inc)
+```
+
+## Treat \texttt{Income} as $Y$ and work on the following questions.<br>
+
+### 1. What is the mean of \texttt{Income}?
+
+```{r}
+mean(inc$Income)
+```
+
+-   $\bar{Y}=$ `r mean(inc$Income)`
+
+### 2. Examine \texttt{Income} in linear regression with no predictor
+
+```{r}
+pred_no<-lm(Income~1,inc)
+summary(pred_no)
+coef(pred_no)
+mean(inc$Income)
+```
+
+A. How would you put these into a formula?
+
+-   $Y_i=\bar{Y}+\epsilon_i$
+
+B. What do you observe? What are the residuals and what do they represent? What are the estimates below Coefficients?
+
+-   `summary(pred_no)` returns a single coefficient for the intercept since no predictors were included in the model.
+-   The model's residuals can be obtained by `resid(pred_no)`. They represent the difference between the regression line and the observed data points (see lecture 3 slide 31).
+-   The estimated intercept coefficient is `r coef(pred_no)`.
+
+C. How does results from B compare to the mean in #1?
+
+-   This is the same as $\bar{Y}=$ `r mean(inc$Income)` from #1.
+
+### 3. Examine \texttt{Income} as a fuction of \texttt{Education} in linear regression
+
+```{r}
+pred_edu<-lm(Income~Education,inc)
+summary(pred_edu)
+coef(pred_edu)
+coef(pred_edu)[1]
+coef(pred_edu)[2]
+```
+
+A. How would you put this into a formula?
+
+-   $Y_i=\beta_0+\beta_1X_i+\epsilon_i$, where $X$ is \texttt{Education}
+
+B. Is the result the same as the one from #2?
+
+-   No. There is an intercept coefficient estimated at `r coef(pred_edu)[1]` and a slope coefficient of \texttt{Education} estimated at `r coef(pred_edu)[2]`.
+
+### 4. Examine \texttt{Income} as a fuction of \texttt{Education} with no intercept in linear regression
+
+```{r}
+pred_edu_noint<-lm(Income~Education-1,inc)
+summary(pred_edu_noint)
+```
+
+A. How would you put this into a formula?
+
+-   $Y_i=\beta_1X_i+\epsilon_i$ where $X$ is \texttt{Education}
+
+B. Is the result the same as the one from #3?
+
+-   No. There is no intercept coefficient, and the slope coefficient of \texttt{Education} estimated at `r coef(pred_edu_noint)[1]`.
+
+### 5. Examine \texttt{Income} as a function of \texttt{Seniority} in linear regression
+
+```{r}
+pred_sen<-lm(Income~Seniority,inc)
+summary(pred_sen)
+```
+
+A. How would you put this into a formula?
+
+-   $Y_i=\beta_0+\beta_1X_i+\epsilon_i$ where $X$ is \texttt{Seniority}
+
+B. How does this compare to the result in #3?
+
+-   Estimated $\beta_0$ and $\beta_1$ are different than those in #3.
+
+### 6. Examine \texttt{Income} as a function of \texttt{Education} and \texttt{Seniority} in linear regression
+
+```{r}
+pred_both<-lm(Income~Education+Seniority,inc)
+summary(pred_both)
+```
+
+A. How would you put this into a formula?
+
+-   $Y_i=\beta_0+\beta_1X_{1i}+\beta_2X_{2i}+\epsilon_i$ where $X_1$ is \texttt{Education} $X_2$ is \texttt{Seniority}
+
+B. How does this compare to the result in #3 and #5?
+
+-   There is an intercept coefficient and two slope coefficients associated with \texttt{Education} and \texttt{Seniority}, respectively
+
+C. What do each of the coefficient estimates mean?
+
+-   The intercept coefficient, `r coef(pred_both)[1]`, indicates the level of \texttt{Income} under no effect of \texttt{Education} and \texttt{Seniority} (i.e., \texttt{Education}=0 and \texttt{Seniority}=0).
+-   The coefficient associated with \texttt{Education}, `r coef(pred_both)[2]`, indicates the change in \texttt{Income} with one unit increase in \texttt{Education}.
+-   The coefficient associated with \texttt{Seniority}, `r coef(pred_both)[3]`, indicates the change in \texttt{Income} with one unit increase in \texttt{Seniority}.
+
+### 7. Do #2-6 make sense?
+
+-   Yes, they seem to make sense. The results show that education and seniority are positively associated with income, as one would expect.
+
+### 8. Can you use results from #2-6? Why and why not?
+
+-   The results can potentially be used in many ways. Some examples are to describe the pattern of income as a function of education and seniority, to make policy decisions that will lead to increased income and to predict income of a person with a certain level of education and seniority.
+-   The results cannot be used in a causal sense, unless there are established theories to bolster the causal relationship.
