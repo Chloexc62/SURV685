@@ -1,0 +1,24 @@
+---
+title: "Project 2"
+author: "Chloe Chen & Kangrui Liu"
+date: "9/12/2023"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+number_sections: yes
+fontsize: 12pt
+---
+# 1. JWHT Chapter 2. Exercise 5.
+## What are the advantages and disadvantages of a very flexible (versus a less flexible) approach for regression or classification? Under what circumstances might a more flexible approach be preferred to a less flexible approach? When might a less flexible approach be preferred?
+```{r}
+
+```
+
+# 2. Faraway Chapter 2. Exercise 2.
+## The dataset uswages is drawn as a sample from the Current Population Survey in 1988. Fit a model with weekly wages as the response and years of education and experience as predictors in linear regression. Report and give a simple interpretation to the regression coefficient for years of education. Now fit the same model but with logged weekly wages. Give an interpretation to the regression coefficient for years of education. Which interpretation is more natural?
+```{r}
+library(faraway)
+data("uswages")
+```
+
