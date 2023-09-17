@@ -1,0 +1,4 @@
+unnamed-chunk-1	~	data	library	lm	summary	uswages
+unnamed-chunk-2	$	$<-	~	lm	log	summary
+unnamed-chunk-3	exp
+unnamed-chunk-4	$	boxplot	hist	library	qqline	qqnorm	uswages
