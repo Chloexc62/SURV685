@@ -21,18 +21,89 @@ knitr::opts_chunk$set(echo = TRUE,cache=TRUE,
 ```{r}
 library(MASS)
 data("Boston")
+summary(Boston)
+library(ggplot2)
+ggplot(Boston, aes(x=crim)) +
+   geom_histogram(position="identity", alpha=0.5)
 ```
 
 ## B. Focus on suburbs with the crime rate above 25. How many suburbs fall into this group? What are the pupil-teacher ratios like in those suburbs? How about property tax rates? How about median home values? How do the pupil-teacher ratios, property tax rates and median home values compare between these suburbs and the remaining suburbs?
 ```{r}
+subset1 <- subset(Boston, Boston$crim > 25)
+dim(subset1)[1]
+summary(subset1$ptratio)
+summary(subset1$tax)
 
+subset2 <- subset(Boston, Boston$crim <= 25)
+dim(subset2)[1]
+summary(subset2$ptratio)
+summary(subset2$tax)
 ```
 
 ## C. Create a scatter plot of the crime rates and the median home values for 1) all suburbs, 2) suburbs bounding Charles River, and 3) suburbs not bounding Charles River. What do you observe?
+```{r}
+subset3 <- subset(Boston, Boston$chas == 1)
+subset4 <- subset(Boston, Boston$chas == 0)
+library(ggplot2)
+ggplot(subset3, aes(y=crim, x=medv))+ 
+  geom_point(color="black") 
+ggplot(subset4, aes(y=crim, x=medv))+ 
+  geom_point(color="yellow") 
+```
+
 ## D. Analyze the crime rates as a function of median home values in a simple linear regression with an intercept. Report what the regression coefficients mean in lay terms.
+```{r}
+model_obj_1 <- lm(crim ~ medv,Boston)
+summary(model_obj_1)
+```
+
 ## E. Calculate the coefficients reported in D as well as their standard errors by hand.
+* From OLS (lecture note slides 33-36), 
+  * $\hat{\beta}_1=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}\equiv\dfrac{SS_{XY}}{SS_{X}}=\dfrac{s_{XY}}{s_{XX}}$, where $s_{XY}=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{n-1}$ and $s_{XX}=\dfrac{\sum(x_i-\bar{x})^2}{n-1}$
+  * $\hat{\beta}_0=\bar{y}-\hat{\beta}_1\bar{x}$
+```{r}
+SS_XY <- sum((Boston$medv-mean(Boston$medv))*(Boston$crim - mean(Boston$crim)))
+SS_X <- sum((Boston$medv-mean(Boston$medv))^2)
+beta_1 <- SS_XY / SS_X
+
+S_XY <- SS_XY / (dim(Boston)[1] - 1)
+S_XX <- SS_X / (dim(Boston)[1] - 1)
+beta_0 <- mean(Boston$crim) - beta_1 * mean(Boston$medv)
+```
+
+* From OLS (lecture note p.24 and p.25), 
+  * $\hat{V}(\hat{\beta}_1)=\dfrac{\hat{\sigma}^2}{SS_{X}}$, where $\hat{\sigma}^2$ is estimated error variance (or residual variance) as $\hat{\sigma}^2=\dfrac{\sum{\hat{\epsilon}_i^2}}{n-2}$
+  * $\hat{V}(\hat{\beta}_0)=\hat{\sigma}^2\left(\dfrac{1}{n}+\dfrac{\bar{x}^2}{SS_{X}}\right)$
+```{r}
+coef_crim_medv <- coef(model_obj_1)
+Boston$hat_crim <- coef_crim_medv[1] + coef_crim_medv[2]*Boston$medv
+Boston$resid_crim_medv <- Boston$crim - Boston$hat_crim
+hat_sigma <- sum(Boston$resid_crim_medv^2)/dim(Boston)[1]-2
+V_beta_1 <- hat_sigma / SS_X
+```
+
+```{r}
+SE_beta_1 <- sqrt(V_beta_1)
+SE_beta_0 <- hat_sigma * (1/dim(Boston)[1] + mean(Boston$resid_crim_medv)^2/SS_X)
+```
+
 ## F. Create a scatter plot of the crime rates and the median home values with a regression line. Is the regression line a good summary of the crime rates? Examine residuals to assess this.
-## G. Create a scatter plot of predicted crim and residuals. What do you observe?
 ```{r}
 
+ggplot(Boston, aes(y=crim, x=medv))+
+  geom_point(color="blue")+
+  geom_abline(slope = coef_crim_medv[2],intercept = coef_crim_medv[1])+
+  labs(title="crim and medv",
+        y ="medv ($,000)", x = "crim (per capita crime rate)")
+```
+
+## G. Create a scatter plot of predicted crim and residuals. What do you observe?
+```{r}
+library(reshape) 
+library(dplyr)
+Boston_sub<-melt(Boston %>% select(crim,hat_crim))
+Boston_sub <- Boston_sub%>%
+  mutate(type=ifelse(variable=="crim","Observed","Predicted"),crim=value)
+ggplot(Boston_sub, aes(x=crim, color=type, fill=type)) +
+   geom_histogram(position="identity", alpha=0.5)
 ```
