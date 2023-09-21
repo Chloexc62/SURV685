@@ -9,6 +9,7 @@ output:
 number_sections: yes
 fontsize: 12pt
 ---
+
 ```{r setup, include=FALSE, tidy=TRUE}
 knitr::opts_chunk$set(echo = TRUE,cache=TRUE, 
                       autodep=TRUE, cache.comments=FALSE,
@@ -21,89 +22,131 @@ knitr::opts_chunk$set(echo = TRUE,cache=TRUE,
 ```{r}
 library(MASS)
 data("Boston")
-summary(Boston)
-library(ggplot2)
-ggplot(Boston, aes(x=crim)) +
-   geom_histogram(position="identity", alpha=0.5)
+summary(Boston$crim)
+hist(Boston$crim, main = "Crim Distribution", xlab = "crim", ylab = "Frequency")
 ```
 
-## B. Focus on suburbs with the crime rate above 25. How many suburbs fall into this group? What are the pupil-teacher ratios like in those suburbs? How about property tax rates? How about median home values? How do the pupil-teacher ratios, property tax rates and median home values compare between these suburbs and the remaining suburbs?
+## B. Focus on suburbs with the crime rate above 25. 
+## How many suburbs fall into this group? What are the pupil-teacher ratios like in those suburbs? How about property tax rates? How about median home values? How do the pupil-teacher ratios, property tax rates and median home values compare between these suburbs and the remaining suburbs?
 ```{r}
-subset1 <- subset(Boston, Boston$crim > 25)
-dim(subset1)[1]
-summary(subset1$ptratio)
-summary(subset1$tax)
+highcrim_sub <- subset(Boston, Boston$crim > 25)
+lowcrim_sub <- subset(Boston, Boston$crim <= 25)
+n_highcrim_sub <- dim(highcrim_sub)
+n_highcrim_sub
 
-subset2 <- subset(Boston, Boston$crim <= 25)
-dim(subset2)[1]
-summary(subset2$ptratio)
-summary(subset2$tax)
+summary1 <- summary(highcrim_sub[c("ptratio", "tax", "medv")])
+summary2 <- summary(lowcrim_sub[c("ptratio", "tax", "medv")])
+print("Summary for highcrim_sub")
+print(summary1)
+print("Summary for lowcrim_sub")
+print(summary2)
+# Use t-test to further compare
+ttest_ptratio <- t.test(highcrim_sub$ptratio, lowcrim_sub$ptratio)
+ttest_ptratio
+ttest_tax <- t.test(highcrim_sub$tax, lowcrim_sub$tax)
+ttest_tax
+ttest_medv <- t.test(highcrim_sub$medv, lowcrim_sub$medv)
+ttest_medv
 ```
+-   There are $11$ suburbs with the crime rate above 25.
+
+-   The ptratio and tax are evenly distributed in high crime suburbs.
+    As we can see from the summary, the mean and median for ptratio are both $20.2$, and mean and median for tax are both $666$. 
+-   For medv in high crime suburbs, it has s mean of $9.355$ and a median of $8.8$.
+
+-   We compared the three variables between two areas using *Welch Two Sample
+    t-test*. The three variables are all significanntly different from each other at a 95% confidence level.
 
 ## C. Create a scatter plot of the crime rates and the median home values for 1) all suburbs, 2) suburbs bounding Charles River, and 3) suburbs not bounding Charles River. What do you observe?
 ```{r}
-subset3 <- subset(Boston, Boston$chas == 1)
-subset4 <- subset(Boston, Boston$chas == 0)
 library(ggplot2)
-ggplot(subset3, aes(y=crim, x=medv))+ 
-  geom_point(color="black") 
-ggplot(subset4, aes(y=crim, x=medv))+ 
-  geom_point(color="yellow") 
+ggplot(Boston, aes(y=crim, x=medv))+
+  geom_point(shape=1, color="red")+
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title="All Suburbs",
+        y ="Median Home Values", x = "Crime Rate")
+
+ggplot(subset(Boston, chas == 1), aes(y=crim, x=medv))+
+  geom_point(shape=1, color="blue")+
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title="Suburbs Bounding Charles River",
+        y ="Median Home Values", x = "Crime Rate")
+
+ggplot(subset(Boston, chas == 0), aes(y=crim, x=medv))+
+  geom_point(shape=1, color="green")+
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(title="Suburbs not Bounding Charles River",
+        y ="Median Home Values", x = "Crime Rate")
 ```
 
-## D. Analyze the crime rates as a function of median home values in a simple linear regression with an intercept. Report what the regression coefficients mean in lay terms.
+-   For all suburbs and these not bounding Charles River, the crime rates and the median home values seems to be negatively correlated with each other
+-   The relations between these two variables are hard to be observed in the suburbs bounding Charles River as the plots are more scattered, this is partly because the highest crime rate observed in this area is quite low(at 10).
+
+
+## D. Analyze the crime rates as a function of median home values in a simple linear regression with an intercept. 
+## Report what the regression coefficients mean in lay terms.
 ```{r}
-model_obj_1 <- lm(crim ~ medv,Boston)
+model_obj_1<-lm(crim~medv,Boston)
 summary(model_obj_1)
+coef(model_obj_1)
 ```
+-   The intercept $11.79654$: Can be interpreted as saying a suburb with a median home value of $0$ has a mean expected per capita crime rate of $11.79654$.
+-   The regression coefficient for medv $-0.36316$: Median home values and per capita crime rates are negatively correlated, on average, with per capita crime rates decreasing by $0.36316$ if the median home value increase by $10,000.
 
 ## E. Calculate the coefficients reported in D as well as their standard errors by hand.
-* From OLS (lecture note slides 33-36), 
-  * $\hat{\beta}_1=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}\equiv\dfrac{SS_{XY}}{SS_{X}}=\dfrac{s_{XY}}{s_{XX}}$, where $s_{XY}=\dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{n-1}$ and $s_{XX}=\dfrac{\sum(x_i-\bar{x})^2}{n-1}$
-  * $\hat{\beta}_0=\bar{y}-\hat{\beta}_1\bar{x}$
 ```{r}
-SS_XY <- sum((Boston$medv-mean(Boston$medv))*(Boston$crim - mean(Boston$crim)))
-SS_X <- sum((Boston$medv-mean(Boston$medv))^2)
-beta_1 <- SS_XY / SS_X
+s_XY<-cov(Boston$medv,Boston$crim)
+s_XX<-var(Boston$medv)
+SS_XY<-sum((Boston$medv-mean(Boston$medv))*(Boston$crim-mean(Boston$crim)))
+SS_X<-sum((Boston$medv-mean(Boston$medv))^2)
 
-S_XY <- SS_XY / (dim(Boston)[1] - 1)
-S_XX <- SS_X / (dim(Boston)[1] - 1)
-beta_0 <- mean(Boston$crim) - beta_1 * mean(Boston$medv)
-```
+beta1<-s_XY/s_XX
+beta0<-mean(Boston$crim)-beta1*mean(Boston$medv)
+beta0;beta1
 
-* From OLS (lecture note p.24 and p.25), 
-  * $\hat{V}(\hat{\beta}_1)=\dfrac{\hat{\sigma}^2}{SS_{X}}$, where $\hat{\sigma}^2$ is estimated error variance (or residual variance) as $\hat{\sigma}^2=\dfrac{\sum{\hat{\epsilon}_i^2}}{n-2}$
-  * $\hat{V}(\hat{\beta}_0)=\hat{\sigma}^2\left(\dfrac{1}{n}+\dfrac{\bar{x}^2}{SS_{X}}\right)$
-```{r}
-coef_crim_medv <- coef(model_obj_1)
-Boston$hat_crim <- coef_crim_medv[1] + coef_crim_medv[2]*Boston$medv
-Boston$resid_crim_medv <- Boston$crim - Boston$hat_crim
-hat_sigma <- sum(Boston$resid_crim_medv^2)/dim(Boston)[1]-2
-V_beta_1 <- hat_sigma / SS_X
 ```
 
 ```{r}
-SE_beta_1 <- sqrt(V_beta_1)
-SE_beta_0 <- hat_sigma * (1/dim(Boston)[1] + mean(Boston$resid_crim_medv)^2/SS_X)
+Boston$h_crim_medv<-beta0+beta1*Boston$medv
+Boston$residual_medv<-Boston$crim-Boston$h_crim_medv
+
+h_sigma_sq_medv<-sum(Boston$residual_medv^2)/(dim(Boston)[1]-2)
+h_sigma_sq_medv
+V_beta1<-h_sigma_sq_medv/SS_X
+SE_beta1<-sqrt(V_beta1)
+
+V_beta0<-h_sigma_sq_medv*(1/dim(Boston)[1]+mean(Boston$medv)^2/SS_X)
+SE_beta0<-sqrt(V_beta0)
+SE_beta0;SE_beta1
+
 ```
+- Coefficients are $11.79654$ and $-0.3631599$.
+- Standard error for /beta0 is $0.9341892$, standard error for /beta1 is $0.03839017$.
 
 ## F. Create a scatter plot of the crime rates and the median home values with a regression line. Is the regression line a good summary of the crime rates? Examine residuals to assess this.
 ```{r}
-
+library(ggplot2)
 ggplot(Boston, aes(y=crim, x=medv))+
   geom_point(color="blue")+
-  geom_abline(slope = coef_crim_medv[2],intercept = coef_crim_medv[1])+
-  labs(title="crim and medv",
-        y ="medv ($,000)", x = "crim (per capita crime rate)")
+  geom_smooth(method='lm', color="red", se=FALSE)+ 
+  labs(title = "Median Home Values vs. Crime Rate", x = "Median Home Values", y = "Crime Rate")
 ```
+```{r}
+summary(resid(model_obj_1))
+summary(model_obj_1)$sigma^2
+```
+-   The regression line might not be a good summary of the crime rates, because we expect residuals normally distribute around the regression line, which is not the case for this regression line.
 
 ## G. Create a scatter plot of predicted crim and residuals. What do you observe?
 ```{r}
-library(reshape) 
-library(dplyr)
-Boston_sub<-melt(Boston %>% select(crim,hat_crim))
-Boston_sub <- Boston_sub%>%
-  mutate(type=ifelse(variable=="crim","Observed","Predicted"),crim=value)
-ggplot(Boston_sub, aes(x=crim, color=type, fill=type)) +
-   geom_histogram(position="identity", alpha=0.5)
+pred <- predict(model_obj_1)
+resid <- resid(model_obj_1)
+
+ggplot(data = Boston, aes(x = pred, y = resid)) +
+  geom_point() +
+  labs(title = "Predicted Crime Rate vs. Residuals", 
+       x = "Predicted Crime Rate",
+       y = "Residuals")
+
 ```
+- We observe a clear pattern of the points, but we expect a random scatter of residuals around the x-axis. So the model is not a good fit for our data.
