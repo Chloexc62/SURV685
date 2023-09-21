@@ -1,0 +1,9 @@
+unnamed-chunk-1	Boston
+unnamed-chunk-2	subset1	subset2
+unnamed-chunk-3	subset3	subset4
+unnamed-chunk-4	model_obj_1
+unnamed-chunk-5	beta_0	beta_1	S_XX	S_XY	SS_X	SS_XY
+unnamed-chunk-6	Boston	coef_crim_medv	hat_sigma	V_beta_1
+unnamed-chunk-7	SE_beta_0	SE_beta_1
+unnamed-chunk-8	
+unnamed-chunk-9	Boston_sub

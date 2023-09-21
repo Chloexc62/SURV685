@@ -20,11 +20,11 @@ knitr::opts_chunk$set(echo = TRUE,cache=TRUE,
 ## A. Examine crim with summary() and in a histogram.
 ```{r}
 library(MASS)
+library(ggplot2)
 data("Boston")
 summary(Boston)
-library(ggplot2)
 ggplot(Boston, aes(x=crim)) +
-   geom_histogram(position="identity", alpha=0.5)
+   geom_histogram(alpha=0.5)
 ```
 
 ## B. Focus on suburbs with the crime rate above 25. How many suburbs fall into this group? What are the pupil-teacher ratios like in those suburbs? How about property tax rates? How about median home values? How do the pupil-teacher ratios, property tax rates and median home values compare between these suburbs and the remaining suburbs?

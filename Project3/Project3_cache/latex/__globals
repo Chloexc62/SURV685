@@ -1,0 +1,9 @@
+unnamed-chunk-1	aes	Boston	crim	data	geom_histogram	ggplot	library	summary
+unnamed-chunk-2	$	<=	>	Boston	dim	subset	summary
+unnamed-chunk-3	$	==	aes	Boston	crim	geom_point	ggplot	library	medv	subset
+unnamed-chunk-4	~	Boston	lm	summary
+unnamed-chunk-5	$	^	Boston	dim	mean	sum
+unnamed-chunk-6	$	$<-	^	coef	dim	model_obj_1	SS_X	sum
+unnamed-chunk-7	$	^	Boston	dim	hat_sigma	mean	sqrt	SS_X	V_beta_1
+unnamed-chunk-8	aes	Boston	coef_crim_medv	crim	geom_abline	geom_point	ggplot	labs	medv
+unnamed-chunk-9	%>%	==	aes	Boston	crim	geom_histogram	ggplot	hat_crim	ifelse	library	melt	mutate	select	type	value	variable
