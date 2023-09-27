@@ -27,37 +27,33 @@ data(Boston)
 m<-lm(medv~crim+zn+indus,Boston)
 summary(m)
 ```
+- the p-value for *crim* is $2.52e-08$; the p-value for *zn* is $0.000889$; the p-value for *indus* is $1.77e-10$.
 
 ### B.List the hypotheses tested in 1.A and their conclusions.
 * $H_0$:${\beta}_0=0$; $H_1$:${\beta}_0\neq 0$
 * $H_0$:${\beta}_{crim}=0$; $H_1$:${\beta}_{crim}\neq 0$
 * $H_0$:${\beta}_{zn}=0$; $H_1$:${\beta}_{zn}\neq 0$
 * $H_0$:${\beta}_{indus}=0$; $H_1$:${\beta}_{indus}\neq 0$
-- The p-values for all of the coefficients are lower than 0.05, so we reject $H_0$, they are all significantly not equal to 0.
+- Conclusions: The p-values for all of the coefficients are lower than 0.05, so we reject $H_0$, they are all significantly not equal to 0, that means all of the coefficients of the predictors are statistically significant.
 
 ### C.What do the estimated regression coefficients in 1.A mean in lay terms? Do
 they make sense?
-- The intercept:The expected mean of median value of owner-occupied homes(*medv*) when all the predictors are $0$. This is almost impossible to happen in real life, so it does not make sense.
-- ${\beta}_{crim}$:the expected change in median value of owner-occupied homes(*medv*) is $-0.24863$ for every one unit change in per capita crime rate(*crim*) while holding the other predictors constant.
-- ${\beta}_{zn}$:the expected change in median value of owner-occupied homes(*medv*) is $0.05850$ for every one unit change in proportion of residential land zoned for lots(*zn*) while holding the other predictors constant.
-- ${\beta}_{indus}$:the expected change in median value of owner-occupied homes(*medv*) is $-0.41558$ for every one unit change in proportion of non-retail business acres per town(*indus*) while holding the other predictors constant.
+- The intercept($\beta_0=27.39465$):The expected mean of median value of owner-occupied homes(*medv*) is $27.39465$ when all the predictors are $0$. This is almost impossible to happen in real life, so it does not make sense.
+- ${\beta}_{crim}=-0.24863$:the expected change in median value of owner-occupied homes(*medv*) is $-0.24863$ for every one unit change in per capita crime rate(*crim*) while holding the other predictors constant.
+- ${\beta}_{zn}=0.05850$:the expected change in median value of owner-occupied homes(*medv*) is $0.05850$ for every one unit change in proportion of residential land zoned for lots(*zn*) while holding the other predictors constant.
+- ${\beta}_{indus}-0.41558$:the expected change in median value of owner-occupied homes(*medv*) is $-0.41558$ for every one unit change in proportion of non-retail business acres per town(*indus*) while holding the other predictors constant.
 
 ### D.Construct 95% confidence intervals for ${\beta}_crim$, ${\beta}_zn$ and ${\beta}_indus$. How do the confidence intervals correspond to 1.A and 1.B?
 ```{r}
-CI_crim <- confint(m, "crim", level = 0.95)
-CI_zn <- confint(m, "zn", level = 0.95)
-CI_indus <- confint(m, "indus", level = 0.95)
-print("The 95% confidence interval for crim:")
-print(CI_crim)
-
-print("The 95% confidence interval for zn:")
-print(CI_zn)
-
-print("The 95% confidence interval for indus:")
-print(CI_indus)
+CI <- confint(model)
+CI
 
 ```
-- Based on the confidence interval values and the coefficients of each predictor variable, we find that the coefficients are indeed significant at the 95% level and are able to reject $H_0$.
+- $\beta_0$ intercept falls between 25.70 and 29.09
+- $\beta_1$ crim falls between -0.33 and -0.16
+- $\beta_2$ zn falls between 0.02 and 0.093
+- $\beta_3$ indus falls between -0.54 and -0.29
+### Based on the confidence interval values and the coefficients of each predictor variable, we find that the coefficients are indeed significant at the 95% level and are able to reject $H_0$.In lay terms, we have 95% confidence to say that the predictors are not equal to 0.
 
 ### E.Calculate the ${R^2}$ and $R^2_{adj}$ by hand and report whether this matches the ${R^2}$ and $R^2_{adj}$ from the output and whey mean?
 ```{r}
@@ -84,6 +80,7 @@ R_squared; adjusted_R_squared
 
 ```
 - The value of ${R^2}$ is $0.2937$ ; the value of $R^2_{adj}$ is $0.2895$ .This matches the ${R^2}$ and $R^2_{adj}$ from the previous output.
+- R squared means the proportion of data is explained by model. Adjusted R squared takes DF(the number of predictors) into account considering parsimony. 
 
 2. Compare the model from #1 and a simple linear regression of *medv* as a
 function of *zn*. Which would you prefer?
