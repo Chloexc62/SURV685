@@ -61,9 +61,29 @@ print(CI_indus)
 
 ### E.Calculate the ${R^2}$ and $R^2_{adj}$ by hand and report whether this matches the ${R^2}$ and $R^2_{adj}$ from the output and whey mean?
 ```{r}
+# Given regression coefficients
+intercept <- 27.39465
+coef_crim <- -0.24863
+coef_zn <- 0.05850
+coef_indus <- -0.41558
+k<- 3
+n<- dim(Boston)[1]
 
+# Predicted values
+predicted_m <- intercept + coef_crim * Boston$crim + coef_zn * Boston$zn + coef_indus * Boston$indus
+# SSR (sum of squared residuals)
+SSR <- sum((predicted_m - Boston$medv)^2)
+# SST (total sum of squares)
+mean_medv <- mean(Boston$medv)
+SST <- sum((Boston$medv - mean_medv)^2)
+# Calculate R-squared & adjusted_R_squared
+R_squared <- 1 - (SSR / SST)
+adjusted_R_squared <- 1 - ((1 - R_squared) * (n - 1)) / (n - k - 1)
+
+R_squared; adjusted_R_squared
 
 ```
+- The value of ${R^2}$ is $0.2937$ ; the value of $R^2_{adj}$ is $0.2895$ .This matches the ${R^2}$ and $R^2_{adj}$ from the previous output.
 
 2. Compare the model from #1 and a simple linear regression of *medv* as a
 function of *zn*. Which would you prefer?
@@ -73,3 +93,5 @@ summary(m_zn)
 summary(m)
 ```
 
+- Theoretically, we would prefer the model from #1 based on the higher adjusted $R^2$ value. 
+- Nonetheless, the final choice should be guided by a comprehensive evaluation of the models and their suitability for specific research or analytical goals.In addition to adjusted $R^2$, it is also crucial to take into account additional aspects, such as the theoretical or practical significance of the predictors, domain knowledge, and the specific goals of certain study.We are also obliged to further evaluate the regression models' underlying assumptions and carry out diagnostic tests.
