@@ -1,0 +1,77 @@
+---
+title: "Project5"
+author: "Chloe Chen & Kangrui Liu"
+date: "2023-09-26"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+number_sections: yes
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE, tidy=TRUE}
+knitr::opts_chunk$set(echo=TRUE,cache=TRUE, 
+                      autodep=TRUE, cache.comments=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.width=4.5, fig.height=3)
+```
+
+### This exercise involves the Boston housing data set in ISLR2. Assume that we are interested in median home values, medv.
+```{r}
+library(ISLR2)
+data(Boston)
+```
+
+## 1. Examine medv as a function of chas in a simple linear regression model with an intercept. *Notice the nature of chas for its use in this and following models*.
+## What hypothesis are you testing with each coefficient in lay terms? Given the results of the hypothesis testing, what do the coefficients mean?
+```{r}
+summary(mod<-lm(medv~factor(chas),Boston))
+```
+- **Hypothesis**:
+* $H_0$:${\gamma}_0=0$; $H_1$:${\gamma}_0\neq 0$
+* The p-value is < 2e-16 which means we can reject the null hypothesis and $\gamma_0$ not equals to 0.
+
+* $H_0$:${\gamma}_{chas}=0$; $H_1$:${\gamma}_{chas}\neq 0$
+* The p-value is 7.39e-05 which means we can reject the null hypothesis and $\gamma_1$ not equals to 0. 
+
+- **Coefficients meaning**
+* ${\gamma}_0$:The mean of *medv* is $22.0938$ if the tract doesn't bound by the Charles River.
+* ${\gamma}_{chas}$:For those located along the Charles River, the medv are $6.3462$ thousand dollars more expensive than those not located along the Charles River on average.
+
+### 2. Examine medv as a function of chas and indus in a multiple linear regression.What do the coefficients mean?
+```{r}
+summary(mod2<-lm(medv~factor(chas)+indus,Boston))
+```
+- **Intercept**: The mean of *medv* is $29.43170$ if the tract doesn't bound by the Charles River and the proportion of non-retail business acres per town is 0.
+- **${\gamma}_{chas=1}$**:The difference in the mean of medv by whether it bounds the Charles River is $7.47818$ when holiding *indus* constant.
+- **${\gamma}_{indus}$**:The expected change in *medv* is $-0.66592$ for every one unit change in the proportion of non-retail business acres per town.
+
+
+### 3. Given results from #1 and #2, what do you conclude about *chas* and *indus* in relation to *medv*? Support your conclusion with a visualization.
+```{r}
+library(ggplot2)
+chas<-ggplot(aes(x=as.factor(chas), y=medv, 
+                     color=as.factor(chas)), data=Boston)+
+  geom_violin(trim=T)+
+  stat_summary(fun=mean, geom="point", size=2, color="red")+
+  theme(legend.position="none")
+indus<-ggplot(aes(x=indus,y=medv),data=Boston)+
+  geom_smooth(method="lm", se=FALSE)
+int<-ggplot(aes(x=indus,y=medv),data=Boston)+
+  facet_grid(~chas)+
+  geom_smooth(method="lm", se=FALSE)
+library(gridExtra)
+grid.arrange(chas, indus, int, layout_matrix=rbind(c(1,2),c(3,3)))
+
+```
+```{r}
+ggplot(aes(x=indus,y=medv),data=Boston)+
+  facet_grid(~chas)+
+  geom_smooth(method="lm", se=FALSE)
+```
+
+- **Conclusion**: 
+1) Those bounds the Charles River have a higher medv when keeping other predictors, as chas and medv are positively correlated; 
+2) The suburbs have a higher proportion of non-retail business acres per town would have lower median value of owner-occupied homes, as medv and indus are negatively correlated;
+3) The impact of indus on medv is greater in those suburbs not bounding the Charles River, as in the relationship between medv and indus, those suburbs with chas = 0 have a greater slope

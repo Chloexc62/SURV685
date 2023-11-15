@@ -1,0 +1,145 @@
+---
+title: "Project 7"
+author: "Chloe Chen & Kangrui Liu"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+number_sections: yes
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE, tidy=TRUE}
+knitr::opts_chunk$set(echo=TRUE,cache=TRUE, 
+                      autodep=TRUE, cache.comments=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.width=4.5, fig.height=3)
+```
+
+* Note: For each question, include R code and output **pertinent** to your answers.
+
+#1. Faraway Chapter 6. Exercise 2.
+- Use the teengamb dataset, fit a model with gamble as the response and the other variables as predictors.
+- Perform regression diagnostics on the model to answer the questions 1.A to 1.G. Display any plots that are relevant. Do not provide plots about which you have nothing to say. Suggest possible improvements or corrections to the model where appropriate.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(faraway)
+data("teengamb")
+```
+##1.A. Check the zero error mean assumption using residual plots. What do you conclude?
+```{r}
+mod1 <- lm(gamble ~ sex + status + income + verbal,teengamb)
+summary(mod1)
+plot(density(resid(mod1)),
+     main="Density Plot")
+
+plot(fitted(mod1),resid(mod1)) + abline(h=0,col="blue")
+
+```
+* There' s no reason to believe that the zero arror mean assumption is violated.
+
+##1.B. Check the constant error variance assumption using residual plots as well as a formal testing. What do you conclude?
+```{r}
+#Graphic
+plot(fitted(mod1),resid(mod1)) + abline(h=0,col="blue")
+
+#Numeric
+cor(fitted(mod1),resid(mod1))
+summary(lm(resid(mod1)~fitted(mod1)))
+summary(fitted(mod1))
+var.test(resid(mod1)[fitted(mod1)<=15],# roughly half the data
+         resid(mod1)[fitted(mod1)>15])
+
+#null hypothesis = variances are equal
+#p value less .05 --> reject null hypothesis, evidence that variances are different
+#p value greater than .05 --> fail to reject null, no evidence that variances are different.
+```
+* No reason to believe that the residual is related to $\hat{y}$
+
+##1.C. Check the error normality assumption. What do you conclude?
+```{r}
+qqnorm(resid(mod1))
+qqline(resid(mod1))
+shapiro.test(resid(mod1))
+```
+* From the Q-Q Plot, we can see that the quantile of residual doesn't match that of a normal distribution, and in the Shapiro test, p-value = 8.16e-05, it rejects the original hypothesis and implies that the residual in this model isn't normally distributed.
+
+##1.D. Check for large leverage points. Which observations have a large leverage?
+###examine the existence of unusual observations
+```{r}
+leverage_values <- hatvalues(mod1)
+#initial test
+average_leverage <- mean(leverage_values)
+leverage_values>2*mean(leverage_values) 
+# further test
+halfnorm(leverage_values)
+cutoff <- 2 * (length(coefficients(mod1)) + 1) / length(teengamb$gamble)
+
+high_leverage_observations <- which(leverage_values > cutoff)
+high_leverage_observations
+```
+* obs 42 & 35 are high leverage points.
+
+##1.E. Check for outliers. What do you conclude?
+```{r}
+# Calculate standardized residuals
+r_ex<-rstudent(mod1)
+sort(r_ex)[1:10]
+sort(r_ex,dec=T)[1:10]
+abs(r_ex)>abs(qt(.05/47,47-5))
+
+```
+* obs 24 is an outlier.
+
+##1.F. Check for influential points. What do you conclude?
+```{r}
+# Calculate Cook's distance
+cd <- cooks.distance(mod1)
+summary(cd)
+sort(cd,dec=T)[1:10]
+
+halfnorm(cd)
+teengamb[c(24,39,5,35),]
+```
+* It appears obs 24 & 39 are influential ponits.
+* Influential observations may be an outlier(24); an observation with large leverage may not necessarily be a an influential observation(42).
+
+
+##1.G. Check the structure of the relationship between the predictors and the response.
+```{r}
+#1.Partial regression
+library(car)
+partial_regression_plots <- crPlots(mod1)
+# we can also do the same thing by:
+plot(teengamb$sex, teengamb$gamble, xlab = "Sex", ylab = "Gamble", main = "Scatter Plot of Gamble vs Sex")
+abline(lm(gamble ~ sex, teengamb))
+plot(teengamb$income, teengamb$gamble, xlab = "Income", ylab = "Gamble", main = "Scatter Plot of Gamble vs Income")
+abline(lm(gamble ~ income, teengamb))
+plot(teengamb$verbal, teengamb$gamble, xlab = "Verbal", ylab = "Gamble", main = "Scatter Plot of Gamble vs Verbal")
+abline(lm(gamble ~ verbal, teengamb))
+plot(teengamb$status, teengamb$gamble, xlab = "Status", ylab = "Gamble", main = "Scatter Plot of Gamble vs Status")
+abline(lm(gamble ~ status, teengamb))
+
+#2. Partial Residuals
+partial_residual_plots <- avPlots(mod1)
+# we can also do the same thing by:
+termplot(mod1, partial.resid=T, terms=1)
+termplot(mod1, partial.resid=T, terms=2)
+termplot(mod1, partial.resid=T, terms=3)
+termplot(mod1, partial.resid=T, terms=4)
+
+#3. Regression on subsetted data
+summary(teengamb)
+sub_mod1 <- lm(gamble~sex + status +income + verbal, subset(teengamb, verbal<= 7))
+sub_mod2 <- lm(gamble~sex + status +income + verbal, subset(teengamb, verbal > 7))
+sumary(sub_mod1) 
+sumary(sub_mod2)
+confint(sub_mod1); confint(sub_mod2)
+
+```
+
+* From the partial regression process, roughly speaking, we conclude that the relationship between the outcome and each of the predictors is linear after accounting/adjusting for the other predictors.
+* We can't reject the hypothesis of the coefficient being different from zero in both models. Hence, there is no reason to believe that the relationship between gamble and verbal differs by the ranges of verbal.

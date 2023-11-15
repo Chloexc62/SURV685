@@ -1,0 +1,111 @@
+---
+title: "Project 6"
+author: "Chloe Chen & Kangrui Liu"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+number_sections: yes
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE, tidy=TRUE}
+knitr::opts_chunk$set(echo=TRUE,cache=TRUE, 
+                      autodep=TRUE, cache.comments=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.width=4.5, fig.height=3)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(faraway)
+data("teengamb")
+```
+
+## Faraway Chapter 4. Exercise 2. Using the *teengamb* data, fit a model with *gamble* as the response and the other variables as predictors.
+```{r}
+mod<-lm(gamble~sex+status+income+verbal, teengamb)
+summary(mod)
+```
+
+## A. Predict the amount that a male with average (given these data) status, income and verbal score would gamble along with an appropriate 95% CI.
+```{r}
+# get the matrix of predictors
+mod_x<-model.matrix(mod) 
+dim(mod_x)
+head(mod_x)
+
+(mod_x_star<-c(1,0,apply(mod_x,2,mean)[3:5])) 
+(mod_y_star<-sum(mod_x_star*coef(mod)))
+
+#calculate its 95% confidence interval
+(mod_x_star_dat<-data.frame(t(mod_x_star)))
+colnames(mod_x_star_dat)<-c("(Intercept)","sex","status", "income","verbal")
+mod_x_star_dat
+predict(mod, new=mod_x_star_dat, interval="predict") 
+```
+* The predicted amount is *28.24252*.
+* The 95% CI is: [-18.51536, 75.00039]
+
+## B. Repeat the prediction for a male with maximal values (for this data) of status,income and verbal score. Which CI is wider and why is this result expected?
+```{r}
+(mod_x_new<-c(1,0,apply(mod_x,2,max)[3:5])) 
+(mod_y_new<-sum(mod_x_new*coef(mod)))
+
+#calculate its 95% confidence interval
+(mod_x_new_dat<-data.frame(t(mod_x_new)))
+colnames(mod_x_new_dat)<-c("(Intercept)","sex","status", "income","verbal")
+mod_x_new_dat
+predict(mod, new=mod_x_new_dat, interval="prediction") 
+```
+* The predicted amount is *71.30794*.
+* The 95% CI is: [17.06588, 125.55], this one is wider than the CI in the question above.
+* **Reasons**: 
+1. Increased Variability: The response variable exhibits higher levels of variability when the predictors are given maximal values. This increases variability may lead to a wider CI due to the model's greater need to take into account the wider possible range of outcomes.
+
+2. Larger Prediction Errors: The model relies on extrapolation when the predictor values are excessive, which can result in greater prediction errors. In other words, there is more uncertainty because the model is making predictions in a part of the predictor space where there may not be enough data.
+
+3. Lack of Data Support: The regression model may lack sufficient data support in those locations, which can result in broader confidence intervals (CIs), if the dataset used to build the model contains few observations with extreme predictor values.
+
+
+## C. Fit a model with sqrt(gamble) as the response but with the same predictors.
+## Now predict the response and give a *95% prediction interval* for the individual in #A. Take care to give your answer in the original units of the response.
+```{r}
+sqrtgamb <- sqrt(teengamb$gamble)
+mod1 <- lm(sqrtgamb~sex+status+income+verbal, teengamb)
+summary(mod1)
+
+mod1_x<-model.matrix(mod1) 
+dim(mod1_x)
+head(mod1_x)
+
+(mod1_x_star<-c(1,0,apply(mod1_x,2,mean)[3:5])) 
+(mod1_y_star<-sum(mod1_x_star*coef(mod1)))
+
+#calculate its 95% confidence interval
+(mod1_x_star_dat<-data.frame(t(mod1_x_star)))
+colnames(mod1_x_star_dat)<-c("(Intercept)","sex","status", "income","verbal")
+pre<-predict(mod1, new=mod1_x_star_dat, interval="prediction") 
+pre^2
+
+```
+* The prediction here is *16.39864*.
+* The 95% prediction interval is: [0.06004216, 69.6237]
+
+## D. Repeat the prediction for the model in #C for a female with status=20,income=1, verbal=10. Comment on the credibility of the result.
+```{r}
+(mod1_x_new<-t(c(1,1, 20, 1, 10)))
+colnames(mod1_x_new)<-c("(Intercept)","sex","status", "income","verbal")
+mod1_x_new
+(mod1_y_new<-sum(mod1_x_new*coef(mod1)))
+```
+* The result is not credible, because sqrt(gamble) cannot be something lower than 0.
+
+
+## E. Now, go back to #A. Consider males with average (given these data) status,income and verbal score would gamble along with an appropriate 95% CI. How does it compare to the interval in #A?
+```{r}
+predict(mod, new=mod_x_star_dat, interval="confidence") 
+```
+* In #A., the predicted amount is *28.24252*, the 95% CI is: [-18.51536, 75.00039], in #E., the predicted amount is also *28.24252*(both intervals are centered at this amount), but the 95% CI is [18.78277, 37.70227], which is more narrow than the former one, that indicates the increased uncertainty about gamble for a given individual than a group.

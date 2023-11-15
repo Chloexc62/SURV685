@@ -1,0 +1,127 @@
+---
+title: "Proj 8"
+author: "Chloe Chen & Kangrui Liu"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+number_sections: yes
+fontsize: 12pt
+---
+
+
+```{r setup, include=FALSE, tidy=TRUE}
+knitr::opts_chunk$set(echo=TRUE,cache=TRUE, 
+                      autodep=TRUE, cache.comments=FALSE,
+                      message=FALSE, warning=FALSE,
+                      fig.width=4.5, fig.height=3)
+```
+
+
+
+## 1. Faraway Chapter 7. Exercise 5.
+* For the prostate data, fit a model with lpsa as the response and the other variables
+as predictors.
+```{r}
+library(faraway)
+data(prostate)
+mod1<-lm(lpsa~lcavol+lweight+age+lbph+svi+lcp+gleason+pgg45, prostate)
+summary(mod1)
+```
+### 1.A. Compute and comment on the condition numbers.
+```{r}
+x_mod1<-model.matrix(mod1)[,-1]
+x_mod1
+e1<-eigen(t(x_mod1)%*%x_mod1) # * is multiply in R %*% is matrix multiplication
+e1
+e1$val
+kappa1<-sqrt(max(e1$val)/min(e1$val))
+nu1<-sqrt(max(e1$val)/e1$val)
+kappa1;nu1 
+```
+* The largest condition number(243.30248) is equal to kappa, and is >30.
+
+### 1.B. Compute and comment on the correlations between the predictors.
+```{r}
+cor(prostate[,c("lcavol","lweight","age","lbph","svi","lcp","gleason","pgg45")])
+```
+* Most of the variables are having a weak linear relationship.
+* The correlations between lcp and lvocal, svi, pgg45 are kind of large, the correlation betweengleason and pgg45 is kind of large， which would imply they are related to some extent.
+
+### 1.C. Compute the variance inflation factors.
+
+```{r}
+vif(mod1)
+```
+* Most of the variables have relatively low VIF, for example, lweight, age, and lbph, the VIF are close to 1, so there's no strong reason to believe they are having a significant multicollinearity issue.
+
+
+## 2. Faraway Chapter 8. Exercise 4.
+* For the cars dataset, fit a linear model with distance as the response and speed as the predictor.
+```{r}
+data(cars)
+mod2<-lm(dist~speed, cars)
+summary(mod2)
+```
+
+
+### 2.A. Test the homoscedasticity assumption using both a scatter plot between the residuals and fitted values and an F-test of equal variance below and above the fitted value of 30.
+```{r}
+plot(fitted(mod2),residuals(mod2), xlab = "Fitted Values", ylab = "Residuals")+
+abline(h=0,col="red")
+res_mod2<-residuals(mod2)
+fitted_values <- fitted(mod2)
+#below and above thefitted value of 30
+below <- res_mod2[fitted_values < 30]
+above <- res_mod2[fitted_values >= 30]
+var_test<- var.test(below,above)
+var_test
+```
+* From the p-value we can reject the null hypothesis of equal variances between the two groups.
+
+### 2.B. Report the estimate of the heteroscedastic consistent variance for the
+regression slope.
+```{r}
+library(dplyr)
+library(sandwich)
+library(lmtest)
+
+hetvar <- mod2 %>% 
+  vcovHC() %>% # calculate Heteroscedasticity-consistent estimation of the covariance matrix for coefficients
+  diag() %>% # gives variances as they are the diagonal of the covariance matrix
+  sqrt() # gives standard error as it is square root of variance
+summary(mod2)
+speed_htvar <- hetvar["speed"]
+speed_htvar
+
+```
+* The heteroscedastic consistent variance for the regression slope is $0.4275372$.
+
+
+### 2.C. Construct 95% confidence interval of the regression slope assuming homoscedasticity and using the results in 2.B. How do they compare?
+```{r}
+# Calculate 95% CI using heteroscedasticity-consistent variance
+mod2$coefficients[2]+c(-1,1)*qt(0.975,mod2$df.residual)*sqrt(hetvar[2])
+```
+* The results in 2.B. lies in the 95% confidence interval(wider than homoscedasticity-consistent interval).
+* This is because after considering the heteroscedasticity, the uncertainty will be higher which means standard error would be larger.
+
+
+### 2.D. Check for the lack of fit of the model.
+```{r}
+mod2_RESID<-lm(resid(mod2)~factor(speed),cars)
+anova(mod2)
+anova(mod2_RESID)
+
+length(unique(cars$speed))
+length(cars$speed)
+(((11354 - 6764.8)/(48-31))/(6764.8/31))
+
+1 - pf(1.237071,df1=31,df2=17)
+
+library(olsrr)
+ols_pure_error_anova(mod2)
+
+```
+* We can see from the Lack of Fit F Test that the F value is 1.23695, the p value is 0.295 (>.05) for the "lack of test". So there's no sufficient reason to believe the model is lack of fit.
